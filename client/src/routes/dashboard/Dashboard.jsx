@@ -1,13 +1,33 @@
 import './dashboard.css'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@clerk/clerk-react'
-import { useEffect } from 'react'
-import ChatList from '../../components/chatList/chatList'
-
 
 const Dashboard = () => {
-
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { getToken } = useAuth();
+
+  const mutation = useMutation({
+    mutationFn: async (text) => {
+      const token = await getToken();
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/chats`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ text }),
+      });
+      if (!res.ok) throw new Error("Failed to create chat");
+      return res.json();
+    },
+    onSuccess: (id) => {
+      queryClient.invalidateQueries({ queryKey: ["userChats"] });
+      navigate(`/dashboard/chats/${id}`);
+    },
+  });
 
   const handleSubmit = async(e) => {
     e.preventDefault();
@@ -15,21 +35,14 @@ const Dashboard = () => {
     
     if(!text) return;
 
-    await fetch("http://localhost:3000/api/chats", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({text}),
-    });
+    mutation.mutate(text);
   };
 
   return (
     <div className='dashboard'>
       <div className="texts"> 
         <div className="logo">
-          <img src='/logo.png'/>
+          <img src='/logo_main.png'/>
           <h1> CHATTERBOX AI </h1>
         </div>
         <div className="options">
@@ -50,7 +63,7 @@ const Dashboard = () => {
       <div className="formContainer"> 
         <form onSubmit={handleSubmit}>
           <input type='text' name='text' placeholder='Ask me anything...'/>
-          <button>
+          <button type='submit'>
             <img src='/arrow.png'/>
           </button>
         </form>

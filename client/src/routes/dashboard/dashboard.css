@@ -3,13 +3,14 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
 
     .texts{
         flex: 1;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
         width: 60%;
 
         .logo{
@@ -18,6 +19,7 @@
             align-items: center;
             opacity: 0.3;
             margin-top: 60px;
+            margin-bottom: 60px;
 
             img{
                 width: 50px;
@@ -34,78 +36,86 @@
         }
 
         .options{
-            height: 100%;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 40px;
-            margin-top: -150px;
+            gap: 30px;
+            flex-wrap: wrap;
+            width: 100%;
 
             .option{
                 display: flex;
-                flex: 1;
+                flex: 1 1 0;
                 flex-direction: column;
                 align-items: center;
                 gap: 15px;
                 font-weight: 300;
                 font-size: 14px;
-                padding: 15px;
+                padding: 20px 10px;
                 border: 1px solid #555555;
                 border-radius: 20px;
-                white-space: nowrap;
+                box-sizing: border-box;
+                min-width: 160px;
+                max-width: 200px;
 
                 img{
-                    width: 40px;
-                    height: 40px;
+                    width: 50px;
+                    height: 50px;
                     object-fit: cover;
                 }
             }
         }
     }
 
-    .formContainer{
+    .formContainer {
         margin-top: auto;
-        margin-bottom: 10px;
-        width: 50%;
+        width: 70%; /* match chat's width */
         background-color: #221636;
         border-radius: 20px;
         display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 5px 10px;
+        margin-bottom: 5px;
 
-        form{
+        form {
             width: 100%;
-            height: 100%;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
+            justify-content: center;
+            gap: 10px;
+        }
 
-            input{
-                flex: 1;
-                padding: 12px;
-                background-color: transparent;
-                border: none;
-                outline: none;
-                color: azure;
-                font-weight: 500;
-            }
-            button{
-                background-color: #605e68;
-                border-radius: 50px;
-                border: none;
-                outline: none;
-                cursor: pointer;
-                padding: 10px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin-right: 10px;
+        input {
+            flex: 1;
+            padding: 12px;
+            background-color: transparent;
+            border: none;
+            outline: none;
+            color: azure;
+            font-weight: 500;
+            font-size: 14px;
+            align-items: center;
+        }
 
-                img{
-                    width: 10px;
-                    height: 10px;
-                    object-fit: cover;
-                }
-            }
+        button,
+        label {
+            border-radius: 50%;
+            background-color: #605e68;
+            border: none;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        button img,
+        label img {
+            width: 12px;
+            height: 12px;
+            object-fit: cover;
         }
     }
 }

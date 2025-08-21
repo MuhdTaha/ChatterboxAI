@@ -1,22 +1,67 @@
 import './chat.css'
 import NewPrompt from '../../components/newPrompt/NewPrompt';
+import { useEffect, useRef } from 'react';
+import { useQuery } from '@tanstack/react-query'
+import { useLocation } from 'react-router-dom';
+import { useAuth } from '@clerk/clerk-react'
+import Markdown from 'react-markdown';
+import { IKImage } from 'imagekitio-react';
 
 const Chat = () => {
+
+  const endRef = useRef(null)
+
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
+  const { getToken } = useAuth();
+  const path = useLocation().pathname
+  const chatId = path.split("/").pop()
+
+  const { isPending, error, data } = useQuery({
+    queryKey: ['chat', chatId],
+    queryFn: async () => {
+      const token = await getToken();
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/chats/${chatId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!res.ok) throw new Error("Failed to fetch chats");
+      return res.json();
+    },
+  });
+
+  console.log(data)
 
   return (
     <div className='chatPage'>
       <div className="wrapper">
         <div className="chat">
-          <div className="message user"> Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quam doloribus enim tempora. Explicabo esse ex natus ullam delectus quo reiciendis ad? Praesentium quis architecto id nulla soluta, incidunt assumenda mollitia? </div>
-          <div className="message"> Test message from AI</div>
-          <div className="message user"> Test message from user</div>
+          {isPending ? "Loading..." : error ? "Something went wrong!" : data?.history?.map((message, i) => (
 
-          <div className="message"> Test message from AI</div>
-          <div className="message user"> Test message from user</div>
-          <div className="message"> Test message from AI</div>
-          <div className="message user"> Test message from user</div>
-          
-          <NewPrompt/>
+            <>
+            {message.img && (
+              <IKImage urlEndpoint={import.meta.env.VITE_IMAGE_KIT_ENDPOINT} 
+              path={message.img} 
+              height="300" width="400" 
+              transformation={[{ height: 300, width: 400}]}
+              loading="lazy"
+              lqip={{ active: true, quality: 20 }}
+              />
+
+            )}
+
+            <div className={message.role == "user" ? "message user" : "message"} key={i}>
+              <Markdown>{message.parts[0].text}</Markdown>
+            </div>
+
+            </>
+          ))}
+
+          {data && <NewPrompt data={data}/>}
+          <div ref={endRef}/>
         </div>
       </div>
     </div>
